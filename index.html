@@ -3,22 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simple Math Game</title>
+    <title>Math Game</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div id="game-container">
-        <h1>Simple Math Game</h1>
         <div id="question-container">
             <p id="question">Question will appear here</p>
-            <input type="number" id="answer" />
-            <button id="submit-answer">Submit Answer</button>
+        </div>
+        <input type="number" id="answer" placeholder="Your answer">
+        <button id="submit-answer">Submit Answer</button>
+        <div id="score-container">
+            <p>Score: <span id="score">0</span></p>
+            <p>High Score: <span id="high-score">0</span></p>
         </div>
         <p id="feedback"></p>
-        <div id="score-container">
-            <p id="score-display">Score: <span id="score">0</span></p>
-            <p id="high-score-display">High Score: <span id="high-score">0</span></p>
-        </div>
     </div>
     <script src="script.js"></script>
 </body>
+</html>

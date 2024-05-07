@@ -1,43 +1,36 @@
 document.addEventListener('DOMContentLoaded', function() {
-    let score = 0;
-
-    let highScore = localStorage.getItem('highScore') || 0; // Retrieve high score from localStorage
-    const highScoreElement = document.getElementById('high-score-display'); // Create a new element to display the high score
-    highScoreElement.textContent = `High Score: ${highScore}`;
-    document.getElementById('game-container').appendChild(highScoreElement); // Append the high score element to the game container
-
-    scoreElement.textContent = score;
-    highScoreElement.textContent = highScore;
-
-    let correctAnswer = generateQuestion();
-
     const questionElement = document.getElementById('question');
     const answerElement = document.getElementById('answer');
-    const feedbackElement = document.getElementById('feedback');
+    const submitButton = document.getElementById('submit-answer');
     const scoreElement = document.getElementById('score');
+    const highScoreElement = document.getElementById('high-score');
+    const feedbackElement = document.getElementById('feedback');
+
+    let score = 0;
+    let highScore = localStorage.getItem('highScore') || 0;
+    highScoreElement.textContent = highScore;
 
     function generateQuestion() {
-        const num1 = Math.floor(Math.random() * 10) + 1;
-        const num2 = Math.floor(Math.random() * 10) + 1;
-        const operation = Math.random() < 0.5 ? 'add' : 'multiply'; // Randomly choose operation
+        const num1 = Math.floor(Math.random() * 100) + 1;
+        const num2 = Math.floor(Math.random() * 100) + 1;
+        const operation = Math.random() < 0.5 ? 'add' : 'multiply';
         let correctAnswer;
-    
+
         if (operation === 'add') {
             questionElement.textContent = `What is ${num1} + ${num2}?`;
             correctAnswer = num1 + num2;
         } else {
-            questionElement.textContent = `What is ${num1} × ${num2}?`; // Use the multiplication symbol (×)
+            questionElement.textContent = `What is ${num1} × ${num2}?`;
             correctAnswer = num1 * num2;
         }
-    
+
         return correctAnswer;
     }
 
-    document.getElementById('submit-answer').addEventListener('click', function() {
-        const userAnswer = parseInt(document.getElementById('answer').value, 10); // Ensure you have an input with id 'answer'
-        const feedbackElement = document.getElementById('feedback'); // Ensure you have this element in your HTML
+    function checkAnswer() {
+        const userAnswer = parseInt(answerElement.value, 10);
         if (userAnswer === correctAnswer) {
-            feedbackElement.textContent = 'Correct!';
+            alert('Correct!'); // Popup for correct answer
             score++;
             scoreElement.textContent = score;
             if (score > highScore) {
@@ -46,9 +39,21 @@ document.addEventListener('DOMContentLoaded', function() {
                 highScoreElement.textContent = highScore;
             }
         } else {
-            feedbackElement.textContent = 'Wrong! Try again.';
+            alert('Wrong! Try again.'); // Popup for wrong answer
         }
-        correctAnswer = generateQuestion(); // Generate a new question after each submission
-        document.getElementById('answer').value = ''; // Clear the answer input
+        correctAnswer = generateQuestion();
+        answerElement.value = '';
+        answerElement.focus(); // Refocus on the answer input
+    }
+
+    let correctAnswer = generateQuestion();
+
+    submitButton.addEventListener('click', checkAnswer);
+
+    // Add event listener for the 'keyup' event on the answer input
+    answerElement.addEventListener('keyup', function(event) {
+        if (event.key === 'Enter') {
+            checkAnswer();
+        }
     });
 });
