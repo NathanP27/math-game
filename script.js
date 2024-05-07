@@ -8,8 +8,18 @@ document.addEventListener('DOMContentLoaded', function() {
     function generateQuestion() {
         const num1 = Math.floor(Math.random() * 10) + 1;
         const num2 = Math.floor(Math.random() * 10) + 1;
-        questionElement.textContent = `What is ${num1} + ${num2}?`;
-        return num1 + num2;
+        const operation = Math.random() < 0.5 ? 'add' : 'multiply'; // Randomly choose operation
+        let correctAnswer;
+    
+        if (operation === 'add') {
+            questionElement.textContent = `What is ${num1} + ${num2}?`;
+            correctAnswer = num1 + num2;
+        } else {
+            questionElement.textContent = `What is ${num1} × ${num2}?`; // Use the multiplication symbol (×)
+            correctAnswer = num1 * num2;
+        }
+    
+        return correctAnswer;
     }
 
     let correctAnswer = generateQuestion();
