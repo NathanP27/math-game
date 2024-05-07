@@ -1,5 +1,16 @@
 document.addEventListener('DOMContentLoaded', function() {
     let score = 0;
+
+    let highScore = localStorage.getItem('highScore') || 0; // Retrieve high score from localStorage
+    const highScoreElement = document.getElementById('high-score-display'); // Create a new element to display the high score
+    highScoreElement.textContent = `High Score: ${highScore}`;
+    document.getElementById('game-container').appendChild(highScoreElement); // Append the high score element to the game container
+
+    scoreElement.textContent = score;
+    highScoreElement.textContent = highScore;
+
+    let correctAnswer = generateQuestion();
+
     const questionElement = document.getElementById('question');
     const answerElement = document.getElementById('answer');
     const feedbackElement = document.getElementById('feedback');
@@ -22,18 +33,22 @@ document.addEventListener('DOMContentLoaded', function() {
         return correctAnswer;
     }
 
-    let correctAnswer = generateQuestion();
-
     document.getElementById('submit-answer').addEventListener('click', function() {
-        const userAnswer = parseInt(answerElement.value, 10);
+        const userAnswer = parseInt(document.getElementById('answer').value, 10); // Ensure you have an input with id 'answer'
+        const feedbackElement = document.getElementById('feedback'); // Ensure you have this element in your HTML
         if (userAnswer === correctAnswer) {
             feedbackElement.textContent = 'Correct!';
             score++;
+            scoreElement.textContent = score;
+            if (score > highScore) {
+                highScore = score;
+                localStorage.setItem('highScore', highScore);
+                highScoreElement.textContent = highScore;
+            }
         } else {
             feedbackElement.textContent = 'Wrong! Try again.';
         }
-        scoreElement.textContent = score;
-        correctAnswer = generateQuestion();
-        answerElement.value = '';
+        correctAnswer = generateQuestion(); // Generate a new question after each submission
+        document.getElementById('answer').value = ''; // Clear the answer input
     });
 });
