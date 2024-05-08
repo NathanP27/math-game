@@ -37,6 +37,13 @@ timer = setInterval(() => {
     }
 }, 1000);
 
+function updateAverageScore() {
+    let totalScore = parseInt(localStorage.getItem('totalScore')) || 0;
+    let sessionsPlayed = parseInt(localStorage.getItem('sessionsPlayed')) || 0;
+    let averageScore = (sessionsPlayed > 0) ? (totalScore / sessionsPlayed).toFixed(2) : 0;
+    document.getElementById('average-score').textContent = averageScore;
+}
+
 function checkAnswer(isAnswerCorrect) {
     clearInterval(timer);
     const userAnswer = parseInt(answerEl.value);
@@ -51,6 +58,23 @@ function checkAnswer(isAnswerCorrect) {
             highScoreEl.textContent = highScore;
         }
         levelUp();
+
+        // Update total score and sessions played in local storage
+        let totalScore = parseInt(localStorage.getItem('totalScore')) || 0;
+        let sessionsPlayed = parseInt(localStorage.getItem('sessionsPlayed')) || 0;
+        localStorage.setItem('totalScore', totalScore + score);
+        localStorage.setItem('sessionsPlayed', sessionsPlayed + 1);
+
+        // Update the average score display
+        updateAverageScore();
+
+        // Update score history in local storage
+        let scoreHistory = JSON.parse(localStorage.getItem('scoreHistory')) || [];
+        scoreHistory.push(score);
+        localStorage.setItem('scoreHistory', JSON.stringify(scoreHistory));
+
+        // Update the progress graph
+        renderProgressGraph();
     } else {
         progressBar.classList.add('bg-danger');
     }
@@ -63,8 +87,59 @@ function levelUp() {
         level++;
         levelEl.textContent = level;
         timeLimit += 2; // Increase time limit for harder levels
+
+        // Increment levels completed in local storage
+        let levelsCompleted = parseInt(localStorage.getItem('levelsCompleted')) || 0;
+        localStorage.setItem('levelsCompleted', levelsCompleted + 1);
+
+        // Update levels completed display
+        document.getElementById('levels-completed').textContent = levelsCompleted + 1;
     }
 }
+
+function renderProgressGraph() {
+    // Fetch data from local storage or initialize it if not present
+    let scoreHistory = JSON.parse(localStorage.getItem('scoreHistory')) || [];
+
+    // Create a new Chart instance
+    new Chart(document.getElementById('progress-graph'), {
+        type: 'line',
+        data: {
+            labels: scoreHistory.map((_, index) => `Session ${index + 1}`),
+            datasets: [{
+                label: 'Score',
+                data: scoreHistory,
+                fill: false,
+                borderColor: 'rgb(75, 192, 192)',
+                tension: 0.1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+}
+
+// Call renderProgressGraph when the game loads to display the current graph
+document.addEventListener('DOMContentLoaded', renderProgressGraph);
+
+// Call updateAverageScore when the game loads to display the current average score
+document.addEventListener('DOMContentLoaded', updateAverageScore);
+
+document.getElementById('reset-btn').addEventListener('click', () => {
+    localStorage.clear();
+    score = 0;
+    level = 1;
+    scoreEl.textContent = score;
+    levelEl.textContent = level;
+    updateAverageScore();
+    document.getElementById('levels-completed').textContent = 0;
+    // Reset any other game state as necessary
+});
 
 submitBtn.addEventListener('click', () => {
     checkAnswer(answerEl.value === '' ? false : parseInt(answerEl.value) === currentQuestion.num1 * currentQuestion.num2);

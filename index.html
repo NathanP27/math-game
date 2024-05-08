@@ -33,14 +33,19 @@
           <div class="card-body">
             <p>Score: <span id="score">0</span></p>
             <p>High Score: <span id="high-score">0</span></p>
+            <p>Average Score: <span id="average-score">0</span></p>
             <p>Level: <span id="level">1</span></p>
+            <p>Levels Completed: <span id="levels-completed">0</span></p>
             <p id="timer"></p>
+            <canvas id="progress-graph" width="400" height="400"></canvas>
+            <button class="btn btn-danger" id="reset-btn">Reset Progress</button>
           </div>
         </div>
       </div>
     </div>
   </div>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
