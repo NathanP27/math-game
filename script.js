@@ -1,65 +1,82 @@
-document.addEventListener('DOMContentLoaded', function() {
-    const questionElement = document.getElementById('question');
-    const answerElement = document.getElementById('answer');
-    const submitButton = document.getElementById('submit-answer');
-    const scoreElement = document.getElementById('score');
-    const highScoreElement = document.getElementById('high-score');
-    const feedbackElement = document.getElementById('feedback');
+const questionEl = document.getElementById('question');
+const answerEl = document.getElementById('answer');
+const submitBtn = document.getElementById('submit-btn');
+const feedbackEl = document.getElementById('feedback');
+const scoreEl = document.getElementById('score');
+const highScoreEl = document.getElementById('high-score');
+const levelEl = document.getElementById('level');
+const timerEl = document.getElementById('timer');
+const progressBar = document.getElementById('progress-bar');
 
-    let score = 0;
-    let highScore = localStorage.getItem('highScore') || 0;
-    highScoreElement.textContent = highScore;
+let score = 0;
+let highScore = 0;
+let level = 1;
+let currentQuestion;
+let timer;
+let timeLimit = 10; // Adjust time limit as desired
 
-    function generateQuestion() {
-        const num1 = Math.floor(Math.random() * 100) + 1;
-        const num2 = Math.floor(Math.random() * 100) + 1;
-        const operation = Math.random() < 0.5 ? 'add' : 'multiply';
-        let correctAnswer;
+function generateQuestion() {
+    const num1 = Math.floor(Math.random() * (level * 10)) + 1;
+    const num2 = Math.floor(Math.random() * (level * 10)) + 1;
+    currentQuestion = { num1, num2 };
+    questionEl.textContent = `${num1} x ${num2}`;
+    answerEl.value = '';
+    answerEl.focus();
+    startTimer();
+    progressBar.setAttribute('aria-valuenow', 0);
+    progressBar.classList.remove('bg-success', 'bg-danger');
+}
 
-        if (operation === 'add') {
-            questionElement.textContent = `What is ${num1} + ${num2}?`;
-            correctAnswer = num1 + num2;
-        } else {
-            questionElement.textContent = `What is ${num1} × ${num2}?`;
-            correctAnswer = num1 * num2;
-        }
-
-        return correctAnswer;
+clearInterval(timer); // Ensures timer doesn't stack
+timer = setInterval(() => {
+    timeLimit--;
+    timerEl.textContent = `Time: ${timeLimit}s`;
+    progressBar.setAttribute('aria-valuenow', (100 - (timeLimit / 10) * 100));
+    if (timeLimit === 0) {
+        checkAnswer(false); // Out of time
     }
+}, 1000);
 
-    function showToast(text) {
-        const toastBody = document.getElementById('toastBody');
-        toastBody.textContent = text;
-        $('#feedbackToast').toast({ delay: 2000 }); // Set the delay for the toast to disappear
-        $('#feedbackToast').toast('show'); // Show the toast
-    }
-
-    function checkAnswer() {
-        const userAnswer = parseInt(answerElement.value, 10);
-        if (userAnswer === correctAnswer) {
-            showFeedback('Correct!');
-            score++;
-            scoreElement.textContent = score;
-            if (score > highScore) {
-                highScore = score;
-                localStorage.setItem('highScore', highScore);
-                highScoreElement.textContent = highScore;
-            }
-        } else {
-            showFeedback('Wrong! Try again.');
+function checkAnswer(isAnswerCorrect) {
+    clearInterval(timer);
+    const userAnswer = parseInt(answerEl.value);
+    const correctAnswer = currentQuestion.num1 * currentQuestion.num2;
+    feedbackEl.textContent = isAnswerCorrect ? 'Correct!' : `Incorrect. The answer is ${correctAnswer}`;
+    if (isAnswerCorrect) {
+        score++;
+        scoreEl.textContent = score;
+        progressBar.classList.add('bg-success');
+        if (score > highScore) {
+            highScore = score;
+            highScoreEl.textContent = highScore;
         }
-        correctAnswer = generateQuestion();
-        answerElement.value = '';
+        levelUp();
+    } else {
+        progressBar.classList.add('bg-danger');
     }
+    answerEl.value = '';
+    setTimeout(generateQuestion, 1000); // Delay for feedback visibility
+}
 
-    let correctAnswer = generateQuestion();
+function levelUp() {
+    if (score % 5 === 0) {
+        level++;
+        levelEl.textContent = level;
+        timeLimit += 2; // Increase time limit for harder levels
+    }
+}
 
-    submitButton.addEventListener('click', checkAnswer);
-
-    // Event listener for the answer input to handle the Enter key
-    answerElement.addEventListener('keyup', function(event) {
-        if (event.key === 'Enter') {
-            checkAnswer();
-        }
-    });
+submitBtn.addEventListener('click', () => {
+    checkAnswer(answerEl.value === '' ? false : parseInt(answerEl.value) === currentQuestion.num1 * currentQuestion.num2);
 });
+
+answerEl.addEventListener('keydown', (event) => {
+    if (event.key === 'Enter') {
+        checkAnswer(answerEl.value === '' ? false : parseInt(answerEl.value) === currentQuestion.num1 * currentQuestion.num2);
+    }
+});
+
+// Add sounds effects (optional)
+// You can use libraries or create audio elements for correct/incorrect sounds
+
+generateQuestion(); // Start the game
