@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Math Game</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
     <div id="game-container">
@@ -12,13 +13,23 @@
             <p id="question">Question will appear here</p>
         </div>
         <input type="number" id="answer" placeholder="Your answer">
-        <button id="submit-answer">Submit Answer</button>
+    <button id="submit-answer">Submit Answer</button> <!-- not working rn PLS FIX !!!-->
         <div id="score-container">
             <p>Score: <span id="score">0</span></p>
             <p>High Score: <span id="high-score">0</span></p>
         </div>
-        <p id="feedback"></p>
+        <div aria-live="polite" aria-atomic="true" style="position: relative; min-height: 200px;">
+            <div class="toast" id="feedbackToast" style="position: absolute; top: 0; right: 0;">
+                <div class="toast-body" id="toastBody">
+                    <!-- Feedback text will go here -->
+                </div>
+            </div>
+        </div>
     </div>
+    <!-- Bootstrap JS, Popper.js, and jQuery -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script src="script.js"></script>
 </body>
 </html>

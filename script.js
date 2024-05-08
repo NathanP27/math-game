@@ -27,10 +27,17 @@ document.addEventListener('DOMContentLoaded', function() {
         return correctAnswer;
     }
 
+    function showToast(text) {
+        const toastBody = document.getElementById('toastBody');
+        toastBody.textContent = text;
+        $('#feedbackToast').toast({ delay: 2000 }); // Set the delay for the toast to disappear
+        $('#feedbackToast').toast('show'); // Show the toast
+    }
+
     function checkAnswer() {
         const userAnswer = parseInt(answerElement.value, 10);
         if (userAnswer === correctAnswer) {
-            alert('Correct!'); // Popup for correct answer
+            showFeedback('Correct!');
             score++;
             scoreElement.textContent = score;
             if (score > highScore) {
@@ -39,18 +46,17 @@ document.addEventListener('DOMContentLoaded', function() {
                 highScoreElement.textContent = highScore;
             }
         } else {
-            alert('Wrong! Try again.'); // Popup for wrong answer
+            showFeedback('Wrong! Try again.');
         }
         correctAnswer = generateQuestion();
         answerElement.value = '';
-        answerElement.focus(); // Refocus on the answer input
     }
 
     let correctAnswer = generateQuestion();
 
     submitButton.addEventListener('click', checkAnswer);
 
-    // Add event listener for the 'keyup' event on the answer input
+    // Event listener for the answer input to handle the Enter key
     answerElement.addEventListener('keyup', function(event) {
         if (event.key === 'Enter') {
             checkAnswer();
